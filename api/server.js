@@ -7,22 +7,34 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:3000", // local dev
+  "https://tradeconnect-six.vercel.app", // Vercel frontend
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
   })
 );
+
 app.use(express.json());
 app.use(express.static("docs"));
 
 // PostgreSQL connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false,
+  ssl: {
+    rejectUnauthorized: false, // Required for Supabase and other managed DBs
+  },
 });
+
 
 
 // Helper function to normalize categories
