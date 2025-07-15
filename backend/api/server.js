@@ -18,11 +18,21 @@ app.use(
       const allowedOrigins = [
         "http://localhost:3000",
         "https://tradeconnect-six.vercel.app",
+        "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app",
       ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("Not allowed by CORS"));
+
+      app.use(
+        cors({
+          origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+              return callback(null, true);
+            }
+            return callback(new Error("Not allowed by CORS"));
+          },
+          credentials: true,
+        })
+      );
+
     },
     credentials: true, // ✅ Allow cookies/auth headers
   })
