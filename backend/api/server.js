@@ -15,14 +15,19 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://tradeconnect-six.vercel.app",
+      ];
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       return callback(new Error("Not allowed by CORS"));
     },
+    credentials: true, // ✅ Allow cookies/auth headers
   })
 );
+
 
 app.use(express.json());
 app.use(express.static("docs"));
