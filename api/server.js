@@ -17,12 +17,13 @@ app.use(express.static("docs"));
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "Tradespeople",
-  password: "Nixon1998!",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
+
 
 // Helper function to normalize categories
 const normalizeCategory = (category) => {
