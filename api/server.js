@@ -68,10 +68,10 @@ function authenticate(req, res, next) {
 
 // Routes
 
-
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "docs", "index.html"));
+  res.send("API is running ✅");
 });
+
 
 // Tradespeople endpoints
 app.get("/api/tradespeople", async (req, res) => {
