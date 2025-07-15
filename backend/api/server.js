@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const allowedOrigins = [
   "http://localhost:3000", // local dev
-  "https://tradeconnect-six.vercel.app", // Vercel frontend
+  "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app", // Vercel frontend
 ];
 
 app.use(
