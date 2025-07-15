@@ -1,3 +1,4 @@
+const API_URL = "https://tradeconnectkenya.onrender.com";
 $(document).ready(function () {
   // ========== CONSTANTS ==========
   const CARDS_PER_PAGE = 3;
@@ -66,7 +67,7 @@ $(document).ready(function () {
   }
 
   function fetchSpecializations() {
-    apiCall("GET", "/api/tradespeople/specializations")
+    apiCall("GET", `${API_URL}/api/tradespeople/specializations`)
       .then((specializations) => {
         const $specializationSelect = $elements.specializationInput;
         $specializationSelect
@@ -118,7 +119,7 @@ $(document).ready(function () {
         ? { specialization: state.currentUser.specialization }
         : {};
 
-    apiCall("GET", "/api/jobs", filters)
+    apiCall("GET", `${API_URL}/api/jobs`, filters)
       .then((jobs) => {
         state.allJobs = jobs;
         renderJobListings(jobs);
@@ -185,7 +186,7 @@ $(document).ready(function () {
 
     toggleLoading(true);
 
-    apiCall("POST", "/api/login", formData)
+    apiCall("POST", `${API_URL}/api/login`, formData)
       .then((response) => {
         saveAuthData(response);
         updateAuthUI();
@@ -205,8 +206,8 @@ $(document).ready(function () {
 
     const endpoint =
       formData.userType === "client"
-        ? "/api/clients/register"
-        : "/api/tradespeople/register";
+        ? `${API_URL}/api/clients/register`
+        : `${API_URL}/api/tradespeople/register`;
 
     toggleLoading(true);
 
@@ -277,7 +278,7 @@ $(document).ready(function () {
     toggleLoading(true);
     $elements.resultsContainer.empty();
 
-    apiCall("GET", "/api/tradespeople")
+    apiCall("GET", `${API_URL}/api/tradespeople`)
       .then((data) => {
         state.allTradespeople = data;
         state.currentPage = 1;
@@ -292,7 +293,7 @@ $(document).ready(function () {
     console.log("Fetching jobs for:", state.currentUser);
     toggleLoading(true);
 
-    apiCall("GET", "/api/jobs", {
+    apiCall("GET", `${API_URL}/api/jobs`, {
       specialization: state.currentUser.specialization,
       location: state.currentUser.location,
     })
@@ -313,7 +314,7 @@ $(document).ready(function () {
   function fetchRandomTradespeople() {
     toggleLoading(true);
 
-    apiCall("GET", "/api/tradespeople/random")
+    apiCall("GET", `${API_URL}/api/tradespeople/random`)
       .then((data) => {
         state.allTradespeople = data;
         updateResultsDisplay();
@@ -324,7 +325,7 @@ $(document).ready(function () {
   }
 
   function fetchStats() {
-    apiCall("GET", "/api/tradespeople/stats")
+    apiCall("GET", `${API_URL}/api/tradespeople/stats`)
       .then((data) => {
         animateCount($elements.tradespeopleCount, data.total);
         updateTodayBox(data.today, data.todayUsers);
@@ -333,7 +334,7 @@ $(document).ready(function () {
   }
 
   function fetchTradespeopleCount() {
-    apiCall("GET", "/api/tradespeople/count")
+    apiCall("GET", `${API_URL}/api/tradespeople/count`)
       .then((data) => {
         animateCount($elements.tradespeopleCount, parseInt(data.count, 10));
       })
@@ -356,7 +357,7 @@ $(document).ready(function () {
     toggleLoading(true);
     console.log("Searching tradespeople with filters:", filters);
 
-    apiCall("GET", "/api/tradespeople", filters)
+    apiCall("GET", `${API_URL}/api/tradespeople`, filters)
       .then((data) => {
         state.allTradespeople = data;
         state.currentPage = 1;
@@ -413,7 +414,7 @@ $(document).ready(function () {
 
     toggleLoading(true);
 
-    apiCall("POST", "/api/jobs", formData)
+    apiCall("POST", `${API_URL}/api/jobs`, formData)
       .then((response) => {
         showToast("Job posted successfully!", "success");
         addJobListing(response);
@@ -444,7 +445,7 @@ $(document).ready(function () {
     toggleLoading(true);
     console.log("Fetching jobs with filters:", filters);
 
-    apiCall("GET", "/api/jobs", filters)
+    apiCall("GET", `${API_URL}/api/jobs`, filters)
       .then((jobs) => {
         state.allJobs = jobs;
         renderJobListings(jobs);
@@ -466,7 +467,7 @@ $(document).ready(function () {
 
     toggleLoading(true);
 
-    apiCall("POST", "/api/jobs/apply", {
+    apiCall("POST", `${API_URL}/api/jobs/apply`, {
       job_id: jobId,
       tradesperson_id: state.currentUser.id,
     })
@@ -710,7 +711,7 @@ $(document).ready(function () {
   function loadApplicationsForClient() {
     if (!state.currentUser || state.currentUser.type !== "client") return;
 
-    apiCall("GET", "/api/client/applications")
+    apiCall("GET", `${API_URL}/api/client/applications`)
       .then((applications) => {
         const $tableBody = $("#applications-table tbody");
         $tableBody.empty();
