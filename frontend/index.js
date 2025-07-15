@@ -1,4 +1,5 @@
-const API_URL = "https://tradeconnectkenya.onrender.com";
+const API_URL = process.env.API_URL;
+
 $(document).ready(function () {
   // ========== CONSTANTS ==========
   const CARDS_PER_PAGE = 3;
