@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TradeFinder - Find Local Tradespeople</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="custom-navbar">
+      <div class="nav-container">
+        <a href="#" class="brand">TradeConnect</a>
+        <button class="menu-toggle" id="menu-toggle">&#9776;</button>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#register">Register</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section id="about-section" class="homepage-about">
+      <h2>Welcome to TradeConnect</h2>
+      <p>
+        TradeConnect is your go-to platform for hiring skilled, verified
+        tradespeople across Kenya. Whether you’re looking for a reliable
+        plumber, electrician, mason, or carpenter, we connect you with trusted
+        professionals in your area—fast and hassle-free.
+      </p>
+      <p>
+        For clients, posting a job is simple and free. Just share your
+        requirements and receive applications from qualified tradespeople. For
+        professionals, it's a chance to showcase your skills, get hired, and
+        grow your business.
+      </p>
+      <p>No middlemen, no guesswork—just quality work, done right.</p>
+    </section>
+
+    <!-- Unified Auth Container -->
+    <div class="auth-container">
+      <!-- Login Form -->
+      <div class="auth-box" id="login-box">
+        <h2>Login</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label class="required-field">Email</label>
+            <input type="email" name="email" required />
+            <div class="invalid-feedback" id="email-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Password</label>
+            <input type="password" name="password" required />
+            <div class="invalid-feedback" id="password-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Account Type</label>
+            <select name="userType" required>
+              <option value="client">Client</option>
+              <option value="tradesperson">Tradesperson</option>
+            </select>
+          </div>
+          <button type="submit">Login</button>
+          <p class="auth-toggle">
+            Don't have an account? <a href="#" id="show-register">Register</a>
+          </p>
+        </form>
+      </div>
+
+      <!-- Registration Form -->
+      <div class="auth-box" id="register-box" style="display: none">
+        <h2>Register</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label class="required-field">Name</label>
+            <input type="text" name="name" required />
+            <div class="invalid-feedback" id="name-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Email</label>
+            <input type="email" name="email" required />
+            <div class="invalid-feedback" id="email-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              pattern="(0|\+?254)?7\d{8}"
+              title="Format: 0712345678, 712345678 or +254712345678"
+              placeholder="0712345678"
+              required
+            />
+            <div class="invalid-feedback" id="phone-error">
+              Please enter a valid Kenyan phone number (0712345678)
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Password</label>
+            <input type="password" name="password" minlength="8" required />
+            <div class="invalid-feedback" id="password-error"></div>
+            <small id="password-requirements">Minimum 8 characters</small>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Confirm Password</label>
+            <input type="password" name="confirm_password" required />
+            <div class="invalid-feedback" id="confirm-password-error"></div>
+          </div>
+          <div class="form-group">
+            <label class="required-field">Account Type</label>
+            <select name="userType" id="register-user-type" required>
+              <option value="">Select Account Type</option>
+              <option value="client">Client</option>
+              <option value="tradesperson">Tradesperson</option>
+            </select>
+          </div>
+          <div id="tradesperson-fields" style="display: none">
+            <div class="form-group">
+              <label class="required-field">Specialization</label>
+              <select name="specialization" required>
+                <option value="">Select Specialization</option>
+                <option value="3D Printing/Renders">3D Printing/Renders</option>
+                <option value="A/C & Mechanical Works">
+                  A/C & Mechanical Works
+                </option>
+                <option value="Alucobond Installation">
+                  Alucobond Installation
+                </option>
+                <option value="Aluminium Works">Aluminium Works</option>
+                <option value="Audio Solutions">Audio Solutions</option>
+                <option value="Automatic Garage Doors">
+                  Automatic Garage Doors
+                </option>
+                <option value="Biodigesters">Biodigesters</option>
+                <option value="Borehole Drilling">Borehole Drilling</option>
+                <option value="Bulk SMS Marketing">Bulk SMS Marketing</option>
+                <option value="Cabro Pavements">Cabro Pavements</option>
+                <option value="Cabinetry">Cabinetry</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="Car Shades">Car Shades</option>
+                <option value="Cleaning Services">Cleaning Services</option>
+                <option value="ClearView Fence">ClearView Fence</option>
+                <option value="CCTV Installation">CCTV Installation</option>
+                <option value="Cold Room Specialist">
+                  Cold Room Specialist
+                </option>
+                <option value="Container Fabrication">
+                  Container Fabrication
+                </option>
+                <option value="Corian Installation">Corian Installation</option>
+                <option value="County Approvals">County Approvals</option>
+                <option value="CNC Machine/Laser cutting">
+                  CNC Machine/Laser cutting
+                </option>
+                <option value="Elevator Suppliers">Elevator Suppliers</option>
+                <option value="Epoxy">Epoxy</option>
+                <option value="EPS">EPS</option>
+                <option value="Electricians">Electricians</option>
+                <option value="Fire Suppression Systems">
+                  Fire Suppression Systems
+                </option>
+                <option value="Formwork">Formwork</option>
+                <option value="Feasibility Study">Feasibility Study</option>
+                <option value="Generator Hire and Sales">
+                  Generator Hire and Sales
+                </option>
+                <option value="Geotechnical Survey">Geotechnical Survey</option>
+                <option value="Granite">Granite</option>
+                <option value="Gypsum Board/Drywall">
+                  Gypsum Board/Drywall
+                </option>
+                <option value="Heavy Equipment/Excavations">
+                  Heavy Equipment/Excavations
+                </option>
+                <option value="Interior Designers">Interior Designers</option>
+                <option value="Joinery-Cabinets/Wardrobes">
+                  Joinery-Cabinets/Wardrobes
+                </option>
+                <option value="Kitchen Fabrication">Kitchen Fabrication</option>
+                <option value="Land Surveyors">Land Surveyors</option>
+                <option value="Landscapers">Landscapers</option>
+                <option value="Land Valuers">Land Valuers</option>
+                <option value="LPG Systems">LPG Systems</option>
+                <option value="Light Gauge Steel Construction">
+                  Light Gauge Steel Construction
+                </option>
+                <option value="Mazeras Installation">
+                  Mazeras Installation
+                </option>
+                <option value="MEP Services">MEP Services</option>
+                <option value="Moulding">Moulding</option>
+                <option value="NCA Contractor Training">
+                  NCA Contractor Training
+                </option>
+                <option value="NEMA Approvals">NEMA Approvals</option>
+                <option value="NEMA Asbestos Disposal Vendor">
+                  NEMA Asbestos Disposal Vendor
+                </option>
+                <option value="Painters">Painters</option>
+                <option value="PVC Ceiling">PVC Ceiling</option>
+                <option value="Plumbers">Plumbers</option>
+                <option value="Plaster Subcontractors">
+                  Plaster Subcontractors
+                </option>
+                <option value="Portable Toilet">Portable Toilet</option>
+                <option value="Precast Concrete">Precast Concrete</option>
+                <option value="Roofing Contractors">Roofing Contractors</option>
+                <option value="Rubber Coin Carpets">Rubber Coin Carpets</option>
+                <option value="Safety Consultants">Safety Consultants</option>
+                <option value="Scaffolding/Trappers">
+                  Scaffolding/Trappers
+                </option>
+                <option value="Screeding">Screeding</option>
+                <option value="Shotcrete">Shotcrete</option>
+                <option value="Shower Cubicles">Shower Cubicles</option>
+                <option value="Signage/Graphics/Large Format Printing">
+                  Signage/Graphics/Large Format Printing
+                </option>
+                <option value="Solar Power Installation">
+                  Solar Power Installation
+                </option>
+                <option value="Soundproofing">Soundproofing</option>
+                <option value="Stainless Steel Fabrication">
+                  Stainless Steel Fabrication
+                </option>
+                <option value="Steel Fabrication">Steel Fabrication</option>
+                <option value="Steel Fixers">Steel Fixers</option>
+                <option value="Steel Lockers/Cabinets">
+                  Steel Lockers/Cabinets
+                </option>
+                <option value="Spray Painting">Spray Painting</option>
+                <option value="SPC Flooring">SPC Flooring</option>
+                <option value="Stamped Concrete">Stamped Concrete</option>
+                <option value="Stone Cladding">Stone Cladding</option>
+                <option value="Stucco Wall Finish">Stucco Wall Finish</option>
+                <option value="Swimming Pools/Saunas">
+                  Swimming Pools/Saunas
+                </option>
+                <option value="Tent/Canvas Installer">
+                  Tent/Canvas Installer
+                </option>
+                <option value="Terrazzo Installer">Terrazzo Installer</option>
+                <option value="Tiling">Tiling</option>
+                <option value="Transport">Transport</option>
+                <option value="Tools Hire">Tools Hire</option>
+                <option value="Tools Repair">Tools Repair</option>
+                <option value="Waterproofing">Waterproofing</option>
+                <option value="Water Pump Installation">
+                  Water Pump Installation
+                </option>
+                <option value="Wall Art">Wall Art</option>
+                <option value="Wood Floors">Wood Floors</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="required-field">Service Area</label>
+              <input type="text" name="location" required />
+            </div>
+            <div class="form-group">
+              <label>Years of Experience</label>
+              <input type="number" name="experience_years" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Bio</label>
+              <textarea name="bio" rows="3"></textarea>
+            </div>
+          </div>
+          <button type="submit">Register</button>
+          <p class="auth-toggle">
+            Already have an account? <a href="#" id="show-login">Login</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- User Greeting -->
+    <div id="user-greeting" style="display: none">
+      Welcome, <span id="username"></span>!
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Homepage Content (shown when not logged in) -->
+      <div id="homepage-content">
+        <!-- Stats Section -->
+        <div id="stats-section" class="stats-section">
+          <div class="stats-container">
+            <div class="tradespeople-count-box">
+              <div class="count-icon"><i class="fas fa-users"></i></div>
+              <div class="count-text">
+                <span id="tradespeople-count">0</span>
+                <p>Trusted Tradespeople Registered</p>
+                <span
+                  id="tradespeople-joined-today"
+                  class="joined-today"
+                ></span>
+              </div>
+            </div>
+            <div class="today-joined-highlight">
+              <div class="today-joined-header">
+                <i class="fas fa-bolt"></i>
+                <div>
+                  <h4 id="joined-today-count">0 joined today</h4>
+                  <p class="joined-subtext">Latest registrations</p>
+                </div>
+              </div>
+              <div class="joined-users-list" id="joined-users-list">
+                <!-- Names will be inserted here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Teaser -->
+        <div id="search-teaser">
+          <h2>Find Trusted Tradespeople Near You</h2>
+          <button class="btn-primary">Start Searching</button>
+        </div>
+      </div>
+
+      <!-- Authenticated Content (shown when logged in) -->
+      <div id="authenticated-content" style="display: none">
+        <!-- Content for Tradespeople -->
+        <div id="tradesperson-content" style="display: none">
+          <h1>Available Jobs</h1>
+          <div class="job-listings" id="job-listings">
+            <!-- Job listings will appear here -->
+          </div>
+        </div>
+
+        <!-- Content for Clients -->
+        <div id="client-content" style="display: none">
+          <div></div>
+          <h2>Applications to Your Jobs</h2>
+          <table id="applications-table" border="1" cellpadding="10">
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Location</th>
+                <th>Experience</th>
+                <th>Bio</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Applied At</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p id="no-applications" style="display: none">No applications yet.</p>
+
+          <!-- Search Section -->
+          <div id="search-section">
+            <h1>Find a Tradesperson Near You</h1>
+            <div class="search-box">
+              <input
+                type="text"
+                id="search-location"
+                placeholder="Your Location"
+              />
+              <select id="specialization">
+                <option value="">All Trades</option>
+                <!-- Options populated dynamically -->
+              </select>
+              <button id="search-btn">Search</button>
+            </div>
+          </div>
+
+          <!-- Results Section -->
+          <div class="results" id="results">
+            <div id="loading-spinner" style="display: none">
+              <i class="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+            <!-- Results will be inserted here -->
+          </div>
+
+          <div class="pagination-controls">
+            <button id="prev-btn" class="pagination-btn" disabled>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span id="page-info">Page 1</span>
+            <button id="next-btn" class="pagination-btn">
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Job Board (shown only for clients) -->
+          <div id="job-board-section">
+            <div class="post-job-card">
+              <h3>Post a New Job</h3>
+              <form id="job-post-form">
+                <div class="form-group">
+                  <label class="required-field">Job Title</label>
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="e.g., Kitchen Plumbing Repair"
+                    required
+                    maxlength="100"
+                  />
+                  <div class="invalid-feedback" id="title-error"></div>
+                </div>
+                <div class="form-group">
+                  <label class="required-field">Description</label>
+                  <textarea
+                    name="description"
+                    rows="4"
+                    placeholder="Describe the work needed..."
+                    required
+                  ></textarea>
+                  <div class="invalid-feedback" id="description-error"></div>
+                </div>
+                <div class="form-group">
+                  <label class="required-field">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    placeholder="e.g., Nairobi, Westlands"
+                    required
+                    maxlength="100"
+                  />
+                  <div class="invalid-feedback" id="location-error"></div>
+                </div>
+                <div class="form-group">
+                  <label class="required-field">Category</label>
+                  <select name="category" required>
+                    <option selected>Select Trade:</option>
+                    <option value="3D Printing/Renders">
+                      3D Printing/Renders
+                    </option>
+                    <option value="A/C & Mechanical Works">
+                      A/C & Mechanical Works
+                    </option>
+                    <option value="Alucobond Installation">
+                      Alucobond Installation
+                    </option>
+                    <option value="Aluminium Works">Aluminium Works</option>
+                    <option value="Audio Solutions">Audio Solutions</option>
+                    <option value="Automatic Garage Doors">
+                      Automatic Garage Doors
+                    </option>
+                    <option value="Biodigesters">Biodigesters</option>
+                    <option value="Borehole Drilling">Borehole Drilling</option>
+                    <option value="Bulk SMS Marketing">
+                      Bulk SMS Marketing
+                    </option>
+                    <option value="Cabro Pavements">Cabro Pavements</option>
+                    <option value="Cabinetry">Cabinetry</option>
+                    <option value="Carpenter">Carpenter</option>
+                    <option value="Car Shades">Car Shades</option>
+                    <option value="Cleaning Services">Cleaning Services</option>
+                    <option value="ClearView Fence">ClearView Fence</option>
+                    <option value="CCTV Installation">CCTV Installation</option>
+                    <option value="Cold Room Specialist">
+                      Cold Room Specialist
+                    </option>
+                    <option value="Container Fabrication">
+                      Container Fabrication
+                    </option>
+                    <option value="Corian Installation">
+                      Corian Installation
+                    </option>
+                    <option value="County Approvals">County Approvals</option>
+                    <option value="CNC Machine/Laser cutting">
+                      CNC Machine/Laser cutting
+                    </option>
+                    <option value="Elevator Suppliers">
+                      Elevator Suppliers
+                    </option>
+                    <option value="Epoxy">Epoxy</option>
+                    <option value="EPS">EPS</option>
+                    <option value="Electricians">Electricians</option>
+                    <option value="Fire Suppression Systems">
+                      Fire Suppression Systems
+                    </option>
+                    <option value="Formwork">Formwork</option>
+                    <option value="Feasibility Study">Feasibility Study</option>
+                    <option value="Generator Hire and Sales">
+                      Generator Hire and Sales
+                    </option>
+                    <option value="Geotechnical Survey">
+                      Geotechnical Survey
+                    </option>
+                    <option value="Granite">Granite</option>
+                    <option value="Gypsum Board/Drywall">
+                      Gypsum Board/Drywall
+                    </option>
+                    <option value="Heavy Equipment/Excavations">
+                      Heavy Equipment/Excavations
+                    </option>
+                    <option value="Interior Designers">
+                      Interior Designers
+                    </option>
+                    <option value="Joinery-Cabinets/Wardrobes">
+                      Joinery-Cabinets/Wardrobes
+                    </option>
+                    <option value="Kitchen Fabrication">
+                      Kitchen Fabrication
+                    </option>
+                    <option value="Land Surveyors">Land Surveyors</option>
+                    <option value="Landscapers">Landscapers</option>
+                    <option value="Land Valuers">Land Valuers</option>
+                    <option value="LPG Systems">LPG Systems</option>
+                    <option value="Light Gauge Steel Construction">
+                      Light Gauge Steel Construction
+                    </option>
+                    <option value="Mazeras Installation">
+                      Mazeras Installation
+                    </option>
+                    <option value="MEP Services">MEP Services</option>
+                    <option value="Moulding">Moulding</option>
+                    <option value="NCA Contractor Training">
+                      NCA Contractor Training
+                    </option>
+                    <option value="NEMA Approvals">NEMA Approvals</option>
+                    <option value="NEMA Asbestos Disposal Vendor">
+                      NEMA Asbestos Disposal Vendor
+                    </option>
+                    <option value="Painters">Painters</option>
+                    <option value="PVC Ceiling">PVC Ceiling</option>
+                    <option value="Plumbers">Plumbers</option>
+                    <option value="Plaster Subcontractors">
+                      Plaster Subcontractors
+                    </option>
+                    <option value="Portable Toilet">Portable Toilet</option>
+                    <option value="Precast Concrete">Precast Concrete</option>
+                    <option value="Roofing Contractors">
+                      Roofing Contractors
+                    </option>
+                    <option value="Rubber Coin Carpets">
+                      Rubber Coin Carpets
+                    </option>
+                    <option value="Safety Consultants">
+                      Safety Consultants
+                    </option>
+                    <option value="Scaffolding/Trappers">
+                      Scaffolding/Trappers
+                    </option>
+                    <option value="Screeding">Screeding</option>
+                    <option value="Shotcrete">Shotcrete</option>
+                    <option value="Shower Cubicles">Shower Cubicles</option>
+                    <option value="Signage/Graphics/Large Format Printing">
+                      Signage/Graphics/Large Format Printing
+                    </option>
+                    <option value="Solar Power Installation">
+                      Solar Power Installation
+                    </option>
+                    <option value="Soundproofing">Soundproofing</option>
+                    <option value="Stainless Steel Fabrication">
+                      Stainless Steel Fabrication
+                    </option>
+                    <option value="Steel Fabrication">Steel Fabrication</option>
+                    <option value="Steel Fixers">Steel Fixers</option>
+                    <option value="Steel Lockers/Cabinets">
+                      Steel Lockers/Cabinets
+                    </option>
+                    <option value="Spray Painting">Spray Painting</option>
+                    <option value="SPC Flooring">SPC Flooring</option>
+                    <option value="Stamped Concrete">Stamped Concrete</option>
+                    <option value="Stone Cladding">Stone Cladding</option>
+                    <option value="Stucco Wall Finish">
+                      Stucco Wall Finish
+                    </option>
+                    <option value="Swimming Pools/Saunas">
+                      Swimming Pools/Saunas
+                    </option>
+                    <option value="Tent/Canvas Installer">
+                      Tent/Canvas Installer
+                    </option>
+                    <option value="Terrazzo Installer">
+                      Terrazzo Installer
+                    </option>
+                    <option value="Tiling">Tiling</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Tools Hire">Tools Hire</option>
+                    <option value="Tools Repair">Tools Repair</option>
+                    <option value="Waterproofing">Waterproofing</option>
+                    <option value="Water Pump Installation">
+                      Water Pump Installation
+                    </option>
+                    <option value="Wall Art">Wall Art</option>
+                    <option value="Wood Floors">Wood Floors</option>
+                  </select>
+                  <div class="invalid-feedback" id="category-error"></div>
+                </div>
+                <div class="form-group">
+                  <label>Budget (KSh)</label>
+                  <input
+                    type="number"
+                    name="budget"
+                    placeholder="Estimated amount"
+                    min="0"
+                  />
+                </div>
+                <button type="submit" class="btn-primary">Post Job</button>
+              </form>
+            </div>
+          </div>
+          <div class="job-filters">
+            <div class="filter-group">
+              <label for="job-specialization-filter">Specialization:</label>
+              <select id="job-specialization-filter">
+                <option value="">All Specializations</option>
+                <option value="3D Printing/Renders">3D Printing/Renders</option>
+                <option value="A/C & Mechanical Works">
+                  A/C & Mechanical Works
+                </option>
+                <option value="Alucobond Installation">
+                  Alucobond Installation
+                </option>
+                <option value="Aluminium Works">Aluminium Works</option>
+                <option value="Audio Solutions">Audio Solutions</option>
+                <option value="Automatic Garage Doors">
+                  Automatic Garage Doors
+                </option>
+                <option value="Biodigesters">Biodigesters</option>
+                <option value="Borehole Drilling">Borehole Drilling</option>
+                <option value="Bulk SMS Marketing">Bulk SMS Marketing</option>
+                <option value="Cabro Pavements">Cabro Pavements</option>
+                <option value="Cabinetry">Cabinetry</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="Car Shades">Car Shades</option>
+                <option value="Cleaning Services">Cleaning Services</option>
+                <option value="ClearView Fence">ClearView Fence</option>
+                <option value="CCTV Installation">CCTV Installation</option>
+                <option value="Cold Room Specialist">
+                  Cold Room Specialist
+                </option>
+                <option value="Container Fabrication">
+                  Container Fabrication
+                </option>
+                <option value="Corian Installation">Corian Installation</option>
+                <option value="County Approvals">County Approvals</option>
+                <option value="CNC Machine/Laser cutting">
+                  CNC Machine/Laser cutting
+                </option>
+                <option value="Elevator Suppliers">Elevator Suppliers</option>
+                <option value="Epoxy">Epoxy</option>
+                <option value="EPS">EPS</option>
+                <option value="Electricians">Electricians</option>
+                <option value="Fire Suppression Systems">
+                  Fire Suppression Systems
+                </option>
+                <option value="Formwork">Formwork</option>
+                <option value="Feasibility Study">Feasibility Study</option>
+                <option value="Generator Hire and Sales">
+                  Generator Hire and Sales
+                </option>
+                <option value="Geotechnical Survey">Geotechnical Survey</option>
+                <option value="Granite">Granite</option>
+                <option value="Gypsum Board/Drywall">
+                  Gypsum Board/Drywall
+                </option>
+                <option value="Heavy Equipment/Excavations">
+                  Heavy Equipment/Excavations
+                </option>
+                <option value="Interior Designers">Interior Designers</option>
+                <option value="Joinery-Cabinets/Wardrobes">
+                  Joinery-Cabinets/Wardrobes
+                </option>
+                <option value="Kitchen Fabrication">Kitchen Fabrication</option>
+                <option value="Land Surveyors">Land Surveyors</option>
+                <option value="Landscapers">Landscapers</option>
+                <option value="Land Valuers">Land Valuers</option>
+                <option value="LPG Systems">LPG Systems</option>
+                <option value="Light Gauge Steel Construction">
+                  Light Gauge Steel Construction
+                </option>
+                <option value="Mazeras Installation">
+                  Mazeras Installation
+                </option>
+                <option value="MEP Services">MEP Services</option>
+                <option value="Moulding">Moulding</option>
+                <option value="NCA Contractor Training">
+                  NCA Contractor Training
+                </option>
+                <option value="NEMA Approvals">NEMA Approvals</option>
+                <option value="NEMA Asbestos Disposal Vendor">
+                  NEMA Asbestos Disposal Vendor
+                </option>
+                <option value="Painters">Painters</option>
+                <option value="PVC Ceiling">PVC Ceiling</option>
+                <option value="Plumbers">Plumbers</option>
+                <option value="Plaster Subcontractors">
+                  Plaster Subcontractors
+                </option>
+                <option value="Portable Toilet">Portable Toilet</option>
+                <option value="Precast Concrete">Precast Concrete</option>
+                <option value="Roofing Contractors">Roofing Contractors</option>
+                <option value="Rubber Coin Carpets">Rubber Coin Carpets</option>
+                <option value="Safety Consultants">Safety Consultants</option>
+                <option value="Scaffolding/Trappers">
+                  Scaffolding/Trappers
+                </option>
+                <option value="Screeding">Screeding</option>
+                <option value="Shotcrete">Shotcrete</option>
+                <option value="Shower Cubicles">Shower Cubicles</option>
+                <option value="Signage/Graphics/Large Format Printing">
+                  Signage/Graphics/Large Format Printing
+                </option>
+                <option value="Solar Power Installation">
+                  Solar Power Installation
+                </option>
+                <option value="Soundproofing">Soundproofing</option>
+                <option value="Stainless Steel Fabrication">
+                  Stainless Steel Fabrication
+                </option>
+                <option value="Steel Fabrication">Steel Fabrication</option>
+                <option value="Steel Fixers">Steel Fixers</option>
+                <option value="Steel Lockers/Cabinets">
+                  Steel Lockers/Cabinets
+                </option>
+                <option value="Spray Painting">Spray Painting</option>
+                <option value="SPC Flooring">SPC Flooring</option>
+                <option value="Stamped Concrete">Stamped Concrete</option>
+                <option value="Stone Cladding">Stone Cladding</option>
+                <option value="Stucco Wall Finish">Stucco Wall Finish</option>
+                <option value="Swimming Pools/Saunas">
+                  Swimming Pools/Saunas
+                </option>
+                <option value="Tent/Canvas Installer">
+                  Tent/Canvas Installer
+                </option>
+                <option value="Terrazzo Installer">Terrazzo Installer</option>
+                <option value="Tiling">Tiling</option>
+                <option value="Transport">Transport</option>
+                <option value="Tools Hire">Tools Hire</option>
+                <option value="Tools Repair">Tools Repair</option>
+                <option value="Waterproofing">Waterproofing</option>
+                <option value="Water Pump Installation">
+                  Water Pump Installation
+                </option>
+                <option value="Wall Art">Wall Art</option>
+                <option value="Wood Floors">Wood Floors</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="job-location-filter">Location:</label>
+              <input
+                type="text"
+                id="job-location-filter"
+                placeholder="Filter by location"
+              />
+            </div>
+
+            <button id="job-search-btn" class="btn-primary">Search Jobs</button>
+          </div>
+
+          <div class="job-listings" id="job-listings">
+            <!-- Jobs will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>TradeConnect</h3>
+          <p>
+            Connecting homeowners with trusted local tradespeople since 2023.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#register">Become a Tradesperson</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li><a href="#privacy">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Contact Us</h4>
+          <p><i class="fas fa-envelope"></i> info@tradeconnect.com</p>
+          <p><i class="fas fa-phone"></i> 0718840955</p>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2023 TradeConnect. All rights reserved.</p>
+      </div>
+    </footer>
+    <div id="toast" class="toast"></div>
+    <script src="index.js"></script>
+  </body>
+</html>
