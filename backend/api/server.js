@@ -72,6 +72,12 @@ app.get("/", (req, res) => {
   res.send("API is running ✅");
 });
 
+app.get("/env-check", (req, res) => {
+  res.json({
+    db: process.env.DATABASE_URL ? "OK" : "Missing",
+    jwt: process.env.JWT_SECRET ? "OK" : "Missing",
+  });
+});
 
 // Tradespeople endpoints
 app.get("/api/tradespeople", async (req, res) => {
