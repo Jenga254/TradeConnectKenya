@@ -1,28 +1,18 @@
 require("dotenv").config();
 const express = require("express");
-const helmet = require("helmet");
+const { Pool } = require("pg");
 const cors = require("cors");
 const path = require("path");
-const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
 
-// Initialize app
 const app = express();
-
-// === Middleware ===
-app.use(helmet());
-app.use(express.json());
-app.use(express.static("docs"));
-
-// === CORS ===
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://tradeconnect-six.vercel.app",
   "https://trade-connect-kenya.vercel.app",
-  "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app",
 ];
-
+app.use(helmet());
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -35,31 +25,53 @@ app.use(
   })
 );
 
-// === PostgreSQL Pool ===
+app.use(express.json());
+app.use(express.static("docs"));
+
+// PostgreSQL connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  ssl: {
+    rejectUnauthorized: false, // Required for Supabase and other managed DBs
+  },
 });
 
-// === JWT Middleware ===
+// Helper function to normalize categories
+const normalizeCategory = (category) => {
+  return category.toLowerCase().trim();
+};
+
+// Authentication middleware
 function authenticate(req, res, next) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+  if (!authHeader) {
+    return res.status(401).json({ error: "Authorization header missing" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Token missing from header" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
+    res.status(401).json({
+      error: "Invalid token",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 }
 
-// === Routes ===
+// Routes
+app.get("/health", (req, res) => res.send("OK"));
+
 app.get("/", (req, res) => {
   res.send("API is running ✅");
 });
+
 
 // Tradespeople endpoints
 app.get("/api/tradespeople", async (req, res) => {
