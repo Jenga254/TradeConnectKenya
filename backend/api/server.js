@@ -11,8 +11,7 @@ app.use(helmet());
 const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://tradeconnect-six.vercel.app",
-  "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app",
+  "https://trade-connect-kenya.vercel.app",
 ];
 
 app.use(
@@ -26,6 +25,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 app.use(express.static("docs"));
