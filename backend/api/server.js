@@ -29,13 +29,29 @@ app.use(express.json());
 app.use(express.static("docs"));
 
 // PostgreSQL connection
+const { Pool } = require("pg");
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Required for Supabase and other managed DBs
+    rejectUnauthorized: false,
   },
+  // Connection pool settings
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
 });
-
+const poolWithPooler = new Pool({
+  connectionString:
+    "postgresql://postgres.slfolxzpxvwvvlvlrtlw:56nyK2ws51x6X8m6@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  // Connection pool settings
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+});
 // Helper function to normalize categories
 const normalizeCategory = (category) => {
   return category.toLowerCase().trim();
@@ -127,7 +143,17 @@ app.get("/api/tradespeople/random", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch tradespeople" });
   }
 });
-
+app.get("/test-db", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("SELECT NOW()");
+    client.release();
+    res.json({ success: true, time: result.rows[0].now });
+  } catch (err) {
+    console.error("Database connection error:", err);
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
 app.get("/api/tradespeople/count", async (req, res) => {
   try {
     const result = await pool.query("SELECT COUNT(*) FROM tradespeople");
