@@ -6,14 +6,14 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
-app.use(helmet());
+
 
 const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://trade-connect-kenya.vercel.app",
 ];
-
+app.use(helmet());
 app.use(
   cors({
     origin: function (origin, callback) {
