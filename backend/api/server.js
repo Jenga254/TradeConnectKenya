@@ -5,39 +5,27 @@ const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
+app.use(helmet());
 
 const app = express();
 const allowedOrigins = [
-  "http://localhost:3000", // local dev
-  "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app", // Vercel frontend
+  "http://localhost:3000",
+  "https://tradeconnect-six.vercel.app",
+  "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:3000",
-        "https://tradeconnect-six.vercel.app",
-        "https://trade-connect-kenya-pghx1fm6x-nixon-kipkorirs-projects.vercel.app",
-      ];
-
-      app.use(
-        cors({
-          origin: function (origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) {
-              return callback(null, true);
-            }
-            return callback(new Error("Not allowed by CORS"));
-          },
-          credentials: true,
-        })
-      );
-
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true, // ✅ Allow cookies/auth headers
+    credentials: true,
   })
 );
-
 
 app.use(express.json());
 app.use(express.static("docs"));
@@ -49,8 +37,6 @@ const pool = new Pool({
     rejectUnauthorized: false, // Required for Supabase and other managed DBs
   },
 });
-
-
 
 // Helper function to normalize categories
 const normalizeCategory = (category) => {
@@ -82,6 +68,7 @@ function authenticate(req, res, next) {
 }
 
 // Routes
+app.get("/health", (req, res) => res.send("OK"));
 
 app.get("/", (req, res) => {
   res.send("API is running ✅");
