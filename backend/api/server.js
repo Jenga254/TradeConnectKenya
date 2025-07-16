@@ -28,8 +28,7 @@ app.use(
 app.use(express.json());
 app.use(express.static("docs"));
 
-// PostgreSQL connection
-const { Pool } = require("pg");
+
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
