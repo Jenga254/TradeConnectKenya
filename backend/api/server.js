@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
+const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -29,36 +30,34 @@ app.use(express.json());
 app.use(express.static("docs"));
 
 
-
-// const pool = new Pool({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: {
-//     rejectUnauthorized: false,
-//   },
-//   // Connection pool settings
-//   max: 20,
-//   idleTimeoutMillis: 30000,
-//   connectionTimeoutMillis: 5000,
-// });
+// Initialize pool with better configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 10, // Reduced from 20 to prevent connection starvation
-  idleTimeoutMillis: 10000, // Reduced from 30000
-  connectionTimeoutMillis: 2000, // Reduced from 5000
-  allowExitOnIdle: true, // Helps with graceful shutdowns
-});
-const poolWithPooler = new Pool({
-  connectionString:
-    "postgresql://postgres.slfolxzpxvwvvlvlrtlw:56nyK2ws51x6X8m6@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: true,
+    ca: fs.readFileSync(path.join(__dirname, "supabase-ca.pem")).toString(),
   },
-  // Connection pool settings
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
 });
+
+// Add event listeners for better debugging
+pool.on('error', (err) => {
+  console.error('Unexpected pool error:', err);
+  process.exit(-1);
+});
+
+// Test connection on startup
+(async () => {
+  try {
+    const client = await pool.connect();
+    console.log('✅ Database connection successful');
+    await client.query('SELECT NOW()');
+    client.release();
+  } catch (err) {
+    console.error('❌ Database connection failed:', err);
+    process.exit(1);
+  }
+})();
+
 // Helper function to normalize categories
 const normalizeCategory = (category) => {
   return category.toLowerCase().trim();
@@ -89,18 +88,6 @@ function authenticate(req, res, next) {
 }
 
 // Routes
-// Database health check middleware
-app.use(async (req, res, next) => {
-  try {
-    const client = await pool.connect();
-    await client.query('SELECT 1');
-    client.release();
-    next();
-  } catch (err) {
-    console.error('Database connection failed:', err);
-    res.status(503).json({ error: 'Service unavailable - database connection failed' });
-  }
-});
 app.get("/health", (req, res) => res.send("OK"));
 
 app.get("/", (req, res) => {
