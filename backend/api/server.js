@@ -30,15 +30,23 @@ app.use(express.static("docs"));
 
 
 
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: {
+//     rejectUnauthorized: false,
+//   },
+//   // Connection pool settings
+//   max: 20,
+//   idleTimeoutMillis: 30000,
+//   connectionTimeoutMillis: 5000,
+// });
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  // Connection pool settings
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  ssl: { rejectUnauthorized: false },
+  max: 10, // Reduced from 20 to prevent connection starvation
+  idleTimeoutMillis: 10000, // Reduced from 30000
+  connectionTimeoutMillis: 2000, // Reduced from 5000
+  allowExitOnIdle: true, // Helps with graceful shutdowns
 });
 const poolWithPooler = new Pool({
   connectionString:
@@ -81,6 +89,18 @@ function authenticate(req, res, next) {
 }
 
 // Routes
+// Database health check middleware
+app.use(async (req, res, next) => {
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    next();
+  } catch (err) {
+    console.error('Database connection failed:', err);
+    res.status(503).json({ error: 'Service unavailable - database connection failed' });
+  }
+});
 app.get("/health", (req, res) => res.send("OK"));
 
 app.get("/", (req, res) => {
