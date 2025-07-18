@@ -35,9 +35,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
-    ca: fs.readFileSync(path.join(__dirname, "supabase-ca.pem")).toString(),
   },
 });
+
 
 // Add event listeners for better debugging
 pool.on('error', (err) => {
