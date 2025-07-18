@@ -131,53 +131,14 @@ $(document).ready(function () {
 
   // ========== EVENT HANDLERS ==========
   function setupEventListeners() {
-    // Job search/filter
-    $("#job-search-btn").on("click", handleJobSearch);
-
-    // Allow pressing Enter in location filter
-    $("#job-location-filter").on("keypress", function (e) {
-      if (e.which === 13) {
-        // Enter key
-        handleJobSearch();
-      }
+    $(document).on("click", ".page-btn", function () {
+      currentPage = Number($(this).data("page"));
+      renderTradespeople();
     });
 
-    // Initialize with all jobs
-    if (state.currentUser) {
-      fetchInitialJobs();
-    }
-    // Navigation and UI
-    $("#reveal-search-btn").on("click", () => {
-      $("#search-teaser").hide();
-      $elements.searchSection.show();
+    $("#search").on("input", function () {
+      handleSearch($(this).val());
     });
-
-    $("#register-user-type").on("change", function () {
-      const isTradesperson = $(this).val() === "tradesperson";
-      $("#tradesperson-fields").toggle(isTradesperson);
-      $("#password-requirements").text(
-        isTradesperson
-          ? "Minimum 8 characters (required)"
-          : "Minimum 8 characters (required)"
-      );
-    });
-
-    // Form submissions
-    $elements.loginForm.on("submit", handleLogin);
-    $elements.registerForm.on("submit", handleRegister);
-    $elements.jobPostForm.on("submit", handleJobPosting);
-
-    // Pagination and search
-    $elements.searchBtn.on("click", handleSearch);
-    $elements.prevBtn.on("click", goToPreviousPage);
-    $elements.nextBtn.on("click", goToNextPage);
-
-    // Auth toggles
-    $(document)
-      .on("click", "#show-register", () => toggleAuthForms(false))
-      .on("click", "#show-login", () => toggleAuthForms(true))
-      .on("click", "#logout-btn", logout)
-      .on("click", ".apply-btn", handleJobApplication);
   }
 
   // ========== AUTHENTICATION FUNCTIONS ==========
@@ -326,53 +287,83 @@ $(document).ready(function () {
   }
 
   function fetchStats() {
-    apiCall("GET", `${API_URL}/api/tradespeople/stats`)
-      .then((data) => {
-        animateCount($elements.tradespeopleCount, data.total);
+    $.ajax({
+      url: `${API_BASE}/tradespeople/stats`,
+      method: "GET",
+      xhrFields: {
+        withCredentials: true,
+      },
+      success: function (data) {
+        animateCount("#tradespeople-count", data.total);
         updateTodayBox(data.today, data.todayUsers);
-      })
-      .catch(showError);
+      },
+      error: function (err) {
+        console.error("Failed to fetch stats:", err);
+      },
+    });
   }
+  function renderTradespeople() {
+    const start = (currentPage - 1) * 6;
+    const paginated = allTradespeople.slice(start, start + 6);
+    $("#tradespeople-list").empty();
 
-  function fetchTradespeopleCount() {
-    apiCall("GET", `${API_URL}/api/tradespeople/count`)
-      .then((data) => {
-        animateCount($elements.tradespeopleCount, parseInt(data.count, 10));
-      })
-      .catch(showError);
+    paginated.forEach((tp) => {
+      $("#tradespeople-list").append(`
+        <div class="tradesperson-card">
+          <h3>${tp.name}</h3>
+          <p><strong>Specialization:</strong> ${tp.specialization}</p>
+          <p><strong>Location:</strong> ${tp.location}</p>
+          <p><strong>Experience:</strong> ${tp.experience_years} years</p>
+          <p><strong>Rating:</strong> ${tp.avg_rating}</p>
+        </div>
+      `);
+    });
   }
-
-  // ========== SEARCH FUNCTIONALITY ==========
-  function handleSearch() {
-    const filters = {
-      location: $elements.locationInput.val().trim(),
-      specialization: $elements.specializationInput.val(),
-    };
-
-    // Validate at least one filter is provided
-    if (!filters.location && !filters.specialization) {
-      showToast("Please enter a location or select a specialization", "error");
-      return;
+  function renderPagination() {
+    const totalPages = Math.ceil(allTradespeople.length / 6);
+    $("#pagination").empty();
+    for (let i = 1; i <= totalPages; i++) {
+      $("#pagination").append(
+        `<button class="page-btn" data-page="${i}">${i}</button>`
+      );
     }
-
-    toggleLoading(true);
-    console.log("Searching tradespeople with filters:", filters);
-
-    apiCall("GET", `${API_URL}/api/tradespeople`, filters)
-      .then((data) => {
-        state.allTradespeople = data;
-        state.currentPage = 1;
-        updateResultsDisplay();
-        updatePaginationControls();
-
-        if (data.length === 0) {
-          showToast("No tradespeople found matching your criteria", "info");
-        }
-      })
-      .catch(showError)
-      .finally(() => toggleLoading(false));
   }
 
+  function fetchTradespeople() {
+    $.ajax({
+      url: `${API_BASE}/tradespeople`,
+      method: "GET",
+      xhrFields: {
+        withCredentials: true,
+      },
+      success: function (data) {
+        allTradespeople = data;
+        renderTradespeople();
+        renderPagination();
+      },
+      error: function (err) {
+        console.error("Failed to fetch tradespeople:", err);
+      },
+    });
+  }
+  // ========== SEARCH FUNCTIONALITY ==========
+  function handleSearch(query) {
+    const filtered = allTradespeople.filter((tp) =>
+      tp.name.toLowerCase().includes(query.toLowerCase())
+    );
+    $("#tradespeople-list").empty();
+    filtered.forEach((tp) => {
+      $("#tradespeople-list").append(`
+        <div class="tradesperson-card">
+          <h3>${tp.name}</h3>
+          <p><strong>Specialization:</strong> ${tp.specialization}</p>
+          <p><strong>Location:</strong> ${tp.location}</p>
+          <p><strong>Experience:</strong> ${tp.experience_years} years</p>
+          <p><strong>Rating:</strong> ${tp.avg_rating}</p>
+        </div>
+      `);
+    });
+  }
   // ========== JOB BOARD FUNCTIONS ==========
   // ========== JOB BOARD FUNCTIONS ==========
   function handleJobPosting(e) {
@@ -573,19 +564,9 @@ $(document).ready(function () {
     `);
   }
 
-  function updateTodayBox(count, users) {
-    $elements.joinedTodayCount.text(`${count} joined today`);
-    $elements.joinedUsersList.html(
-      count === 0
-        ? `<p class="no-joins"><i class="fas fa-user-slash"></i> No new signups today</p>`
-        : users
-            .slice(0, 5)
-            .map(
-              (user) =>
-                `<div class="joined-user"><i class="fas fa-user-circle"></i> ${user}</div>`
-            )
-            .join("")
-    );
+  function updateTodayBox(jobs, users) {
+    $("#today-jobs").text(jobs);
+    $("#today-users").text(users);
   }
 
   function updatePaginationControls() {
@@ -612,15 +593,17 @@ $(document).ready(function () {
     }
   }
 
-  function animateCount($element, target) {
+  function animateCount(selector, count) {
     let current = 0;
-    const stepTime = Math.max(Math.floor(1000 / target), 30);
-
-    const timer = setInterval(() => {
-      current += 1;
-      $element.text(current);
-      if (current >= target) clearInterval(timer);
-    }, stepTime);
+    const increment = Math.ceil(count / 100);
+    const interval = setInterval(() => {
+      current += increment;
+      if (current >= count) {
+        current = count;
+        clearInterval(interval);
+      }
+      $(selector).text(current);
+    }, 20);
   }
 
   function toggleLoading(show) {
@@ -753,7 +736,9 @@ $(document).ready(function () {
   setTimeout(() => {
     $(".today-joined-highlight").fadeOut("slow");
   }, 5000); // 5000ms = 5 seconds
-
+  fetchStats();
+  fetchTradespeople();
+  setupEventListeners();
   // ========== START APPLICATION ==========
   init();
 });
