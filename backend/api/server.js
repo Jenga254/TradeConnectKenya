@@ -12,6 +12,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://trade-connect-kenya.vercel.app",
+  "https://tradeconnectkenya.onrender.com",
 ];
 app.use(helmet());
 app.use(
@@ -29,15 +30,13 @@ app.use(
 app.use(express.json());
 app.use(express.static("docs"));
 
-
 // Initialize pool with better configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // <== critical for Supabase + Render
   },
 });
-
 
 // Add event listeners for better debugging
 pool.on('error', (err) => {
