@@ -32,15 +32,10 @@ app.use(express.static("docs"));
 
 // Initialize pool with better configuration
 const pool = new Pool({
-  host: process.env.PGHOST || "aws-0-ap-south-1.pooler.supabase.com",
-  user: process.env.PGUSER || "postgres",
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT || 6543,
-  database: process.env.PGDATABASE || "postgres",
-  ssl: {
-    rejectUnauthorized: false, // Don't validate CA
-  },
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
+
 
 console.log("Database URL:", process.env.DATABASE_URL);
 
