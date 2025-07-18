@@ -17,12 +17,7 @@ const allowedOrigins = [
 app.use(helmet());
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -40,7 +35,6 @@ app.options(
 );
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "docs")));
 
 // Initialize pool with better configuration
 const pool = new Pool({
@@ -563,6 +557,9 @@ app.post("/api/tradespeople/register", async (req, res) => {
   }
 });
 // Error handling middleware
+
+app.use(express.static(path.join(__dirname, "docs")));
+
 app.use((err, req, res, next) => {
   console.error("Error:", err.stack);
   res.status(500).json({ error: "Something went wrong!" });
@@ -581,7 +578,11 @@ try {
   console.error("Server startup error:", err);
   process.exit(1);
 }
-
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Server error:", err.stack);
+  res.status(500).json({ error: "Internal server error" });
+});
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
