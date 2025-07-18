@@ -32,11 +32,17 @@ app.use(express.static("docs"));
 
 // Initialize pool with better configuration
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: process.env.PGHOST || "aws-0-ap-south-1.pooler.supabase.com",
+  user: process.env.PGUSER || "postgres",
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT || 6543,
+  database: process.env.PGDATABASE || "postgres",
   ssl: {
-    rejectUnauthorized: false, // <== critical for Supabase + Render
+    rejectUnauthorized: false, // Don't validate CA
   },
 });
+
+console.log("Database URL:", process.env.DATABASE_URL);
 
 // Add event listeners for better debugging
 pool.on('error', (err) => {
