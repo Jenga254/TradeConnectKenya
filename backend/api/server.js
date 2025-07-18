@@ -40,7 +40,7 @@ app.options(
 );
 
 app.use(express.json());
-app.use(express.static("docs"));
+app.use(express.static(path.join(__dirname, "docs")));
 
 // Initialize pool with better configuration
 const pool = new Pool({
@@ -48,12 +48,11 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-
 console.log("Database URL:", process.env.DATABASE_URL);
 
 // Add event listeners for better debugging
-pool.on('error', (err) => {
-  console.error('Unexpected pool error:', err);
+pool.on("error", (err) => {
+  console.error("Unexpected pool error:", err);
   process.exit(-1);
 });
 
@@ -61,11 +60,11 @@ pool.on('error', (err) => {
 (async () => {
   try {
     const client = await pool.connect();
-    console.log('✅ Database connection successful');
-    await client.query('SELECT NOW()');
+    console.log("✅ Database connection successful");
+    await client.query("SELECT NOW()");
     client.release();
   } catch (err) {
-    console.error('❌ Database connection failed:', err);
+    console.error("❌ Database connection failed:", err);
     process.exit(1);
   }
 })();
@@ -563,10 +562,25 @@ app.post("/api/tradespeople/register", async (req, res) => {
     }
   }
 });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
 // Start server
-const PORT = process.env.PORT || 3000;
-const HOST = "0.0.0.0"; // ✅ Add this line
+try {
+  app.listen(PORT, HOST, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`);
+  });
+} catch (err) {
+  console.error("Server startup error:", err);
+  process.exit(1);
+}
 
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
